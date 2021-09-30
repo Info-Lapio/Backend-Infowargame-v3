@@ -35,6 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 //http request를 보낼때 토큰 사용 여부
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
+                .antMatchers("/user").permitAll()
                 .antMatchers("/swagger-ui.html#/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

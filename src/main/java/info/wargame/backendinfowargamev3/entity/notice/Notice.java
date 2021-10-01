@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Getter
 @Builder
@@ -26,4 +27,13 @@ public class Notice {
     private LocalDateTime noticeAt;
 
     private String writer;
+
+    public Notice updateNotice(String title, String content, String writer) {
+        this.title = title;
+        this.content = content;
+        this.writer = writer;
+        this.noticeAt = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+
+        return this;
+    }
 }

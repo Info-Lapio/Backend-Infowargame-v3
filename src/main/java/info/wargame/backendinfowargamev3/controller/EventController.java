@@ -23,7 +23,7 @@ public class EventController {
     }
 
     @GetMapping("/{pageNum}")
-    public List<EventResponse> readEvents(int pageNum) {
+    public List<EventResponse> readEvents(@PathVariable int pageNum) {
         return eventService.getEvents(pageNum);
     }
 

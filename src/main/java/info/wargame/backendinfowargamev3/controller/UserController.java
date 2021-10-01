@@ -13,7 +13,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping("/v1")
     public void signUp(@RequestBody SignUpRequest signUpRequest) {
         userService.signUp(signUpRequest);
     }

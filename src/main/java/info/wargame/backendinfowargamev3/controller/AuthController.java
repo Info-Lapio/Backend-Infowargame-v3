@@ -14,17 +14,17 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping
+    @PostMapping("/v1")
     public TokenResponse signIn(@RequestBody SignInRequest signInRequest) {
         return authService.signIn(signInRequest);
     }
 
-    @PostMapping("/admin")
+    @PostMapping("/v1/admin")
     public TokenResponse signInAdmin(@RequestBody SignInRequest signInRequest) {
         return authService.signInAdmin(signInRequest);
     }
 
-    @PutMapping
+    @PutMapping("/v1")
     public TokenResponse refreshToken(@RequestHeader("X-Refresh-Token") String refreshToken,
                                       @RequestHeader("Authorization") String accessToken) {
         return authService.refreshToken(refreshToken, accessToken);

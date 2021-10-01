@@ -25,4 +25,12 @@ public class Event {
 
     @OneToMany(mappedBy = "event_image", cascade = CascadeType.ALL)
     private List<EventImage> eventImages;
+
+
+    public Event updateEvent(String eventName, String content) {
+        this.content = content;
+        this.eventName = eventName;
+
+        return this;
+    }
 }

@@ -18,7 +18,13 @@ import javax.persistence.Id;
 public class ProblemFile {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long fileId;
+    private Long problemId;
 
     private String fileName;
+
+    public ProblemFile updateFile(String fileName) {
+        this.fileName = fileName;
+
+        return this;
+    }
 }

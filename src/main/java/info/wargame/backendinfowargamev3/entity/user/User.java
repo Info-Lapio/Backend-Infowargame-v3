@@ -25,4 +25,10 @@ public class User {
     private UserAuthority userAuthority;
 
     private Integer score;
+
+    public User scoreUp(Integer score) {
+        this.score += score;
+
+        return this;
+    }
 }

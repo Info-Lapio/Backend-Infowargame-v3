@@ -25,8 +25,19 @@ public class Problem {
 
     private String frag;
 
-
     private Integer score;
 
     private ProblemType problemType;
+
+    private Boolean existFile;
+
+    public Problem updateProblem(String title, String content, String frag, Integer score, ProblemType problemType) {
+        this.title = title;
+        this.content = content;
+        this.frag = frag;
+        this.score = score;
+        this.problemType = problemType;
+
+        return this;
+    }
 }

@@ -40,4 +40,27 @@ public class FileValidate {
 
         return fileName;
     }
+
+    @SneakyThrows
+    public String validateFileAndSave(MultipartFile file) {
+        if(file.isEmpty())
+            throw new RuntimeException("File bad request");
+
+        String originName = file.getOriginalFilename();
+
+        if(originName == null || originName.isEmpty())
+            throw new RuntimeException("file bad request");
+
+        String ex = StringUtils.getFilenameExtension(originName);
+        if(ex == null || ex.isEmpty())
+            throw new RuntimeException("Ex bad request");
+
+        if(!ex.contains("zip"))
+            throw new RuntimeException("Ex bad request");
+
+        String fileName = UUID.randomUUID() + "." + ex;
+        file.transferTo(new File(fileDir, fileName));
+
+        return fileName;
+    }
 }

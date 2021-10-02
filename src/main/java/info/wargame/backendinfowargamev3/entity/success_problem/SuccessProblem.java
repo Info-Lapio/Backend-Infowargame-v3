@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -26,4 +27,6 @@ public class SuccessProblem {
     @ManyToOne
     @JoinColumn(name = "problem_id")
     private Problem problem;
+
+    private LocalDate solveAt;
 }

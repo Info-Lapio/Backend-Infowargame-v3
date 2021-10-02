@@ -31,4 +31,10 @@ public class User {
 
         return this;
     }
+
+    public User updateName(String name) {
+        this.nickName = name;
+
+        return this;
+    }
 }

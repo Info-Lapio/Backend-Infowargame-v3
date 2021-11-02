@@ -2,6 +2,9 @@ package info.wargame.backendinfowargamev3.service.auth;
 
 import info.wargame.backendinfowargamev3.entity.user.repository.UserRepository;
 import info.wargame.backendinfowargamev3.entity.user.enums.UserAuthority;
+import info.wargame.backendinfowargamev3.error.exceptions.LoginFailedException;
+import info.wargame.backendinfowargamev3.error.exceptions.InvalidTokenException;
+import info.wargame.backendinfowargamev3.error.exceptions.IsNotRefreshTokenException;
 import info.wargame.backendinfowargamev3.payload.request.SignInRequest;
 import info.wargame.backendinfowargamev3.payload.response.TokenResponse;
 import info.wargame.backendinfowargamev3.security.JwtProvider;
@@ -38,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
                             .tokenType(prefix)
                             .build();
                 })
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(LoginFailedException::new);
     }
 
     @Override
@@ -55,19 +58,19 @@ public class AuthServiceImpl implements AuthService {
                             .tokenType(prefix)
                             .build();
                 })
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(LoginFailedException::new);
     }
 
     @Override
     public TokenResponse refreshToken(String refreshToken, String accessToken) {
-        if(!jwtProvider.getEmail(refreshToken).equals(accessToken)) {
-            throw new RuntimeException("Invalid Token");
+        if(!passwordEncoder.matches(accessToken, jwtProvider.getEmail(refreshToken))) {
+            throw new InvalidTokenException();
         }
         if(!jwtProvider.validateToken(refreshToken)) {
-            throw new RuntimeException("Invalid Token");
+            throw new InvalidTokenException();
         }
         if(!jwtProvider.isRefreshToken(refreshToken)) {
-            throw new RuntimeException("is not refresh token");
+            throw new IsNotRefreshTokenException();
         }
 
         String email = jwtProvider.getEmailWithRefreshToken(refreshToken);

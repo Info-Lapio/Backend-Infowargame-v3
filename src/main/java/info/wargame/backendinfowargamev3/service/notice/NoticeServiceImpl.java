@@ -5,6 +5,9 @@ import info.wargame.backendinfowargamev3.entity.notice.repository.NoticeReposito
 import info.wargame.backendinfowargamev3.entity.user.User;
 import info.wargame.backendinfowargamev3.entity.user.enums.UserAuthority;
 import info.wargame.backendinfowargamev3.entity.user.repository.UserRepository;
+import info.wargame.backendinfowargamev3.error.exceptions.IsNotAdminException;
+import info.wargame.backendinfowargamev3.error.exceptions.NoticeNotFoundException;
+import info.wargame.backendinfowargamev3.error.exceptions.UserNotFoundException;
 import info.wargame.backendinfowargamev3.payload.request.UpdateNoticeRequest;
 import info.wargame.backendinfowargamev3.payload.request.WriteNoticeRequest;
 import info.wargame.backendinfowargamev3.payload.response.NoticeResponse;
@@ -33,10 +36,10 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public void writeNotice(WriteNoticeRequest writeNoticeRequest) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         noticeRepository.save(
                 Notice.builder()
@@ -51,7 +54,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public List<NoticeResponse> mainNotices() {
         userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         Page<NoticeResponse> noticeResponses = noticeRepository.getNotice(PageRequest.of(0, PAGE_NUM));
 
@@ -61,7 +64,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public List<NoticeResponse> readNotices(int pageNum) {
         userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         Page<NoticeResponse> noticeResponses = noticeRepository.getNotice(PageRequest.of(pageNum, PAGE_NUM));
 
@@ -71,13 +74,13 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public void updateNotice(Long noticeId, UpdateNoticeRequest updateNoticeRequest) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         Notice notice = noticeRepository.findByNoticeId(noticeId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(NoticeNotFoundException::new);
 
         noticeRepository.save(
                 notice.updateNotice(updateNoticeRequest.getTitle(), updateNoticeRequest.getContent(), user.getNickName())
@@ -88,13 +91,13 @@ public class NoticeServiceImpl implements NoticeService {
     @Transactional
     public void deleteNotice(Long noticeId) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         noticeRepository.findByNoticeId(noticeId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(NoticeNotFoundException::new);
 
         noticeRepository.deleteByNoticeId(noticeId);
     }

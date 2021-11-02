@@ -8,23 +8,23 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin("*")
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/auth/v1")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/v1")
+    @PostMapping
     public TokenResponse signIn(@RequestBody SignInRequest signInRequest) {
         return authService.signIn(signInRequest);
     }
 
-    @PostMapping("/v1/admin")
+    @PostMapping("/admin")
     public TokenResponse signInAdmin(@RequestBody SignInRequest signInRequest) {
         return authService.signInAdmin(signInRequest);
     }
 
-    @PutMapping("/v1")
+    @PutMapping
     public TokenResponse refreshToken(@RequestHeader("X-Refresh-Token") String refreshToken,
                                       @RequestHeader("Authorization") String accessToken) {
         return authService.refreshToken(refreshToken, accessToken);

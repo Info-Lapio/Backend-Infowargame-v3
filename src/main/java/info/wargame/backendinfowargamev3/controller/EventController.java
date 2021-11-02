@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/event")
+@RequestMapping("/event/v1")
 @RequiredArgsConstructor
 public class EventController {
 

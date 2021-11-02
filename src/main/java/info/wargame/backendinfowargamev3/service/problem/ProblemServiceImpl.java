@@ -9,6 +9,7 @@ import info.wargame.backendinfowargamev3.entity.success_problem.repository.Succe
 import info.wargame.backendinfowargamev3.entity.user.User;
 import info.wargame.backendinfowargamev3.entity.user.enums.UserAuthority;
 import info.wargame.backendinfowargamev3.entity.user.repository.UserRepository;
+import info.wargame.backendinfowargamev3.error.exceptions.*;
 import info.wargame.backendinfowargamev3.payload.request.UpdateProblemRequest;
 import info.wargame.backendinfowargamev3.payload.request.WriteProblemRequest;
 import info.wargame.backendinfowargamev3.payload.response.ProblemResponse;
@@ -52,10 +53,10 @@ public class ProblemServiceImpl implements ProblemService{
     @Override
     public void writeProblem(WriteProblemRequest writeProblemRequest) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         Problem problem = problemRepository.save(
                 Problem.builder()
@@ -80,10 +81,10 @@ public class ProblemServiceImpl implements ProblemService{
     @Override
     public void submitProblem(Long problemId, String frag) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         Problem problem = problemRepository.findByProblemId(problemId)
                 .orElseThrow(RuntimeException::new);
@@ -107,7 +108,7 @@ public class ProblemServiceImpl implements ProblemService{
     public ResponseEntity<Object> downloadProblemFile(String fileName) {
         File file = new File(fileDir, fileName);
         if(!file.exists())
-            throw new RuntimeException("File not found");
+            throw new FragFailedException();
 
         try {
             Resource resource = new InputStreamResource(new FileInputStream(file));
@@ -123,7 +124,7 @@ public class ProblemServiceImpl implements ProblemService{
     @Override
     public List<ProblemResponse> readProblem(int pageNum) {
         userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         Page<ProblemResponse> problemResponses = problemRepository.getProblems(PageRequest.of(pageNum, PAGE_NUM));
 
@@ -133,13 +134,13 @@ public class ProblemServiceImpl implements ProblemService{
     @Override
     public void updateProblem(Long problemId, UpdateProblemRequest updateProblemRequest) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         Problem problem = problemRepository.findByProblemId(problemId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(ProblemNotFoundException::new);
 
         problemRepository.save(
                 problem.updateProblem(
@@ -153,11 +154,11 @@ public class ProblemServiceImpl implements ProblemService{
 
         if(problem.getExistFile()) {
             ProblemFile problemFile = problemFileRepository.findByProblemId(problemId)
-                    .orElseThrow(RuntimeException::new);
+                    .orElseThrow(ProblemFileNotFoundException::new);
 
             File file = new File(fileDir, problemFile.getFileName());
             if(!file.exists())
-                throw new RuntimeException("file not found");
+                throw new ProblemFileNotFoundException();
 
             file.delete();
 
@@ -171,23 +172,23 @@ public class ProblemServiceImpl implements ProblemService{
     @Transactional
     public void deleteProblem(Long problemId) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         Problem problem = problemRepository.findByProblemId(problemId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(ProblemNotFoundException::new);
 
         problemRepository.deleteByProblemId(problemId);
 
         if(problem.getExistFile()) {
             ProblemFile problemFile = problemFileRepository.findByProblemId(problemId)
-                    .orElseThrow(RuntimeException::new);
+                    .orElseThrow(ProblemFileNotFoundException::new);
 
             File file = new File(fileDir, problemFile.getFileName());
             if(!file.exists())
-                throw new RuntimeException("file not found");
+                throw new ProblemFileNotFoundException();
             file.delete();
 
             problemFileRepository.deleteByProblemId(problemId);

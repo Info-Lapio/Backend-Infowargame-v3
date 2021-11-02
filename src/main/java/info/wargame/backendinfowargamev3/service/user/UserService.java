@@ -7,5 +7,6 @@ import info.wargame.backendinfowargamev3.payload.response.UserResponse;
 public interface UserService {
     void signUp(SignUpRequest signUpRequest);
     UserResponse getMyInfo();
+    UserResponse getUserInfo(String email);
     void updateUserInfo(UpdateUserInfoRequest updateUserInfoRequest);
 }

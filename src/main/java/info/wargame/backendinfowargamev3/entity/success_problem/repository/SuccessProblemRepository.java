@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface SuccessProblemRepository extends JpaRepository<SuccessProblem, Long> {
-    int countByEmail(String email);
-    List<SuccessProblem> findAllByEmail(String email);
-    int countByEmailAndSolveAt(String email, LocalDate solveAt);
+    int countByUser_Email(String email);
+    List<SuccessProblem> findAllByUser_Email(String email);
+    int countByUser_EmailAndSolveAt(String email, LocalDate solveAt);
 }

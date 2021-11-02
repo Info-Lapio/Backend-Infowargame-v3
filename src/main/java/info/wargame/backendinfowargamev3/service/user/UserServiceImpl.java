@@ -5,6 +5,7 @@ import info.wargame.backendinfowargamev3.entity.success_problem.repository.Succe
 import info.wargame.backendinfowargamev3.entity.user.User;
 import info.wargame.backendinfowargamev3.entity.user.enums.UserAuthority;
 import info.wargame.backendinfowargamev3.entity.user.repository.UserRepository;
+import info.wargame.backendinfowargamev3.error.exceptions.UserNotFoundException;
 import info.wargame.backendinfowargamev3.payload.request.SignUpRequest;
 import info.wargame.backendinfowargamev3.payload.request.UpdateUserInfoRequest;
 import info.wargame.backendinfowargamev3.payload.response.NodeResponse;
@@ -29,35 +30,18 @@ public class UserServiceImpl implements UserService {
 
     private final AuthenticationFacade authenticationFacade;
 
-    @Override
-    public void signUp(SignUpRequest signUpRequest) {
-        userRepository.save(
-                User.builder()
-                        .email(signUpRequest.getEmail())
-                        .nickName(signUpRequest.getNickName())
-                        .password(signUpRequest.getPassword())
-                        .score(0)
-                        .userAuthority(UserAuthority.USER)
-                        .build()
-        );
-    }
-
-    @Override
-    public UserResponse getMyInfo() {
-        User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
-
+    private UserResponse setUserResponse(User user) {
         int maxProblemNum = problemRepository.countAll();
-        int successNum = successProblemRepository.countByEmail(user.getEmail());
+        int successNum = successProblemRepository.countByUser_Email(user.getEmail());
 
         LocalDate start = LocalDate.now(ZoneId.of("Asia/Seoul"));
         LocalDate end = start.minusDays(7);
 
         List<NodeResponse> nodeResponses = new ArrayList<>();
 
-        for(int i = 0; i < 7; i++) {
+        for(int i = 0; i <= 7; i++) {
             LocalDate date = end.plusDays(i);
-            int solveNum = successProblemRepository.countByEmailAndSolveAt(user.getEmail(), end);
+            int solveNum = successProblemRepository.countByUser_EmailAndSolveAt(user.getEmail(), end);
             nodeResponses.add(
                     NodeResponse.builder()
                             .date(date)
@@ -85,9 +69,41 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void signUp(SignUpRequest signUpRequest) {
+        userRepository.save(
+                User.builder()
+                        .email(signUpRequest.getEmail())
+                        .nickName(signUpRequest.getNickName())
+                        .password(signUpRequest.getPassword())
+                        .score(0)
+                        .userAuthority(UserAuthority.USER)
+                        .build()
+        );
+    }
+
+    @Override
+    public UserResponse getMyInfo() {
+        User user = userRepository.findByEmail(authenticationFacade.getEmail())
+                .orElseThrow(UserNotFoundException::new);
+
+        return setUserResponse(user);
+    }
+
+    @Override
+    public UserResponse getUserInfo(String email) {
+        userRepository.findByEmail(authenticationFacade.getEmail())
+                .orElseThrow(UserNotFoundException::new);
+
+        User target = userRepository.findByEmail(authenticationFacade.getEmail())
+                .orElseThrow(UserNotFoundException::new);
+
+        return setUserResponse(target);
+    }
+
+    @Override
     public void updateUserInfo(UpdateUserInfoRequest updateUserInfoRequest) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         userRepository.save(
                 user.updateName(updateUserInfoRequest.getName())

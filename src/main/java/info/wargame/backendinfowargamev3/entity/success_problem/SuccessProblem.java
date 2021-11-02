@@ -17,11 +17,11 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class SuccessProblem {
     @Id
-    private String email;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long rankId;
 
     @ManyToOne
     @JoinColumn(name = "email")
-    @MapsId
     private User user;
 
     @ManyToOne

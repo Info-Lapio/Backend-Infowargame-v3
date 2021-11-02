@@ -7,6 +7,10 @@ import info.wargame.backendinfowargamev3.entity.event_image.repository.EventImag
 import info.wargame.backendinfowargamev3.entity.user.User;
 import info.wargame.backendinfowargamev3.entity.user.enums.UserAuthority;
 import info.wargame.backendinfowargamev3.entity.user.repository.UserRepository;
+import info.wargame.backendinfowargamev3.error.exceptions.EventImageNotFoundException;
+import info.wargame.backendinfowargamev3.error.exceptions.EventNotFoundException;
+import info.wargame.backendinfowargamev3.error.exceptions.IsNotAdminException;
+import info.wargame.backendinfowargamev3.error.exceptions.UserNotFoundException;
 import info.wargame.backendinfowargamev3.payload.request.UpdateEventRequest;
 import info.wargame.backendinfowargamev3.payload.request.WriteEventRequest;
 import info.wargame.backendinfowargamev3.payload.response.EventResponse;
@@ -63,7 +67,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventResponse> mainPageEvents() {
         userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         return returnResponse(0, MAIN_NUM);
     }
@@ -71,7 +75,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventResponse> getEvents(int pageNum) {
         userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         return returnResponse(pageNum, PAGE_NUM);
     }
@@ -79,10 +83,10 @@ public class EventServiceImpl implements EventService {
     @Override
     public void writeEvent(WriteEventRequest writeEventRequest) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(!user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         Event event = eventRepository.save(
                 Event.builder()
@@ -108,13 +112,13 @@ public class EventServiceImpl implements EventService {
     @Override
     public void updateEvent(Long eventId, UpdateEventRequest updateEventRequest) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(!user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         Event event = eventRepository.findByEventId(eventId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(EventNotFoundException::new);
 
         eventRepository.save(
                 event.updateEvent(updateEventRequest.getTitle(), updateEventRequest.getContent())
@@ -123,7 +127,7 @@ public class EventServiceImpl implements EventService {
         for(EventImage eventImage : event.getEventImages()) {
             File file = new File(imageDir, eventImage.getImageName());
             if(!file.exists())
-                throw new RuntimeException("event image not found");
+                throw new EventImageNotFoundException();
 
             file.delete();
         }
@@ -147,18 +151,18 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public void deleteEvent(Long eventId) {
         User user = userRepository.findByEmail(authenticationFacade.getEmail())
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if(user.getUserAuthority().equals(UserAuthority.ADMIN))
-            throw new RuntimeException("user not admin");
+            throw new IsNotAdminException();
 
         Event event = eventRepository.findByEventId(eventId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(EventNotFoundException::new);
 
         for(EventImage eventImage : event.getEventImages()) {
             File file = new File(imageDir, eventImage.getImageName());
             if(!file.exists())
-                throw new RuntimeException("event iamge not found");
+                throw new EventImageNotFoundException();
 
             file.delete();
         }

@@ -19,5 +19,6 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
 
     void deleteByProblemId(Long problemId);
 
+    @Query("select count(p) from Problem p")
     int countAll();
 }

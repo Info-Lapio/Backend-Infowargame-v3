@@ -20,5 +20,7 @@ public class EventImage {
 
     private String imageName;
 
-    private Long eventId;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 }

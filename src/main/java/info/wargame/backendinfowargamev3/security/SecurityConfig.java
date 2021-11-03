@@ -34,9 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .formLogin().disable()
                 //http request를 보낼때 토큰 사용 여부
                 .authorizeRequests()
-                .antMatchers("/auth/**").permitAll()
-                .antMatchers("/user").permitAll()
-                .antMatchers("/swagger-ui.html#/**").permitAll()
+                .antMatchers("/auth/v1/**").permitAll()
+                .antMatchers("/user/v1").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtProvider));
@@ -44,10 +44,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring().antMatchers(
-                "/v2/api-docs", "/swagger-resources/**",
-                "/swagger-ui.html", "/webjars/**", "/swagger/**");
+                "/v2/api-docs", "/configuration/ui", "/swagger-resources", "" +
+                        "/configuration/security", "/swagger-ui.html", "/webjars/**","/swagger/**");
     }
 
     @Override

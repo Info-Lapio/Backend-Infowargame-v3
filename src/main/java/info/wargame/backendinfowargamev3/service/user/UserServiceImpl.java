@@ -13,6 +13,7 @@ import info.wargame.backendinfowargamev3.payload.response.SolveResponse;
 import info.wargame.backendinfowargamev3.payload.response.UserResponse;
 import info.wargame.backendinfowargamev3.security.auth.AuthenticationFacade;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final SuccessProblemRepository successProblemRepository;
 
     private final AuthenticationFacade authenticationFacade;
+    private final PasswordEncoder passwordEncoder;
 
     private UserResponse setUserResponse(User user) {
         int maxProblemNum = problemRepository.countAll();
@@ -74,7 +76,7 @@ public class UserServiceImpl implements UserService {
                 User.builder()
                         .email(signUpRequest.getEmail())
                         .nickName(signUpRequest.getNickName())
-                        .password(signUpRequest.getPassword())
+                        .password(passwordEncoder.encode(signUpRequest.getPassword()))
                         .score(0)
                         .userAuthority(UserAuthority.USER)
                         .build()

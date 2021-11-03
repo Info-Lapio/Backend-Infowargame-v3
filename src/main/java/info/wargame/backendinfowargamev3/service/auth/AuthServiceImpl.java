@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findByEmail(signInRequest.getEmail())
                 .filter(user -> passwordEncoder.matches(signInRequest.getPassword(), user.getPassword()) && user.getUserAuthority().equals(UserAuthority.ADMIN))
                 .map(user -> {
-                    String accessToken = jwtProvider.generateAccessToken(passwordEncoder.encode(user.getEmail()));
+                    String accessToken = jwtProvider.generateAccessToken(user.getEmail());
                     String refreshToken = jwtProvider.generateRefreshToken(passwordEncoder.encode(accessToken), user.getEmail());
 
                     return TokenResponse.builder()
@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.findByEmail(signInRequest.getEmail())
                 .filter(user -> passwordEncoder.matches(signInRequest.getPassword(), user.getPassword()))
                 .map(user -> {
-                    String accessToken = jwtProvider.generateAccessToken(passwordEncoder.encode(user.getEmail()));
+                    String accessToken = jwtProvider.generateAccessToken(user.getEmail());
                     String refreshToken = jwtProvider.generateRefreshToken(passwordEncoder.encode(accessToken), user.getEmail());
 
                     return TokenResponse.builder()

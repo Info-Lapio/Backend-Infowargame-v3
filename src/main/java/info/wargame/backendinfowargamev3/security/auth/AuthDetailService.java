@@ -1,6 +1,7 @@
 package info.wargame.backendinfowargamev3.security.auth;
 
 import info.wargame.backendinfowargamev3.entity.user.repository.UserRepository;
+import info.wargame.backendinfowargamev3.error.exceptions.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,9 +14,9 @@ public class AuthDetailService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
-    public AuthDetail loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
-        return userRepository.findByEmail(phoneNumber)
+    public AuthDetail loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmail(email)
                 .map(AuthDetail::new)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(UserNotFoundException::new);
     }
 }

@@ -101,7 +101,7 @@ public class EventServiceImpl implements EventService {
             eventImages.add(
                     EventImage.builder()
                             .imageName(fileValidate.validateImageAndSave(image))
-                            .eventId(event.getEventId())
+                            .event(event)
                             .build()
             );
         }
@@ -132,13 +132,13 @@ public class EventServiceImpl implements EventService {
             file.delete();
         }
 
-        eventImageRepository.deleteAllByEventId(eventId);
+        eventImageRepository.deleteAllByEvent_EventId(eventId);
 
         List<EventImage> images = new ArrayList<>();
         for(MultipartFile image : updateEventRequest.getImages()) {
             images.add(
                     EventImage.builder()
-                            .eventId(eventId)
+                            .event(event)
                             .imageName(fileValidate.validateImageAndSave(image))
                             .build()
             );

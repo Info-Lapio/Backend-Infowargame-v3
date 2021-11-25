@@ -1,6 +1,7 @@
 package info.wargame.backendinfowargamev3.service.problem;
 
 import info.wargame.backendinfowargamev3.entity.problem.Problem;
+import info.wargame.backendinfowargamev3.entity.problem.enums.ProblemType;
 import info.wargame.backendinfowargamev3.entity.problem.repository.ProblemRepository;
 import info.wargame.backendinfowargamev3.entity.problem_file.ProblemFile;
 import info.wargame.backendinfowargamev3.entity.problem_file.repository.ProblemFileRepository;
@@ -122,11 +123,11 @@ public class ProblemServiceImpl implements ProblemService{
     }
 
     @Override
-    public List<ProblemResponse> readProblem(int pageNum) {
+    public List<ProblemResponse> readProblem(int pageNum, ProblemType problemType) {
         userRepository.findByEmail(authenticationFacade.getEmail())
                 .orElseThrow(UserNotFoundException::new);
 
-        Page<ProblemResponse> problemResponses = problemRepository.getProblems(PageRequest.of(pageNum, PAGE_NUM));
+        Page<ProblemResponse> problemResponses = problemRepository.getProblems(PageRequest.of(pageNum, PAGE_NUM), problemType);
 
         return problemResponses.toList();
     }

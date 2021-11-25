@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/event/v1")
 @RequiredArgsConstructor
 public class EventController {

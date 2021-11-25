@@ -1,6 +1,7 @@
 package info.wargame.backendinfowargamev3.entity.problem.repository;
 
 import info.wargame.backendinfowargamev3.entity.problem.Problem;
+import info.wargame.backendinfowargamev3.entity.problem.enums.ProblemType;
 import info.wargame.backendinfowargamev3.payload.response.ProblemResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,8 +15,8 @@ import java.util.Optional;
 public interface ProblemRepository extends JpaRepository<Problem, Long> {
     Optional<Problem> findByProblemId(Long problemId);
 
-    @Query("select p.problemId, p.title, p.content, p.problemType, p.score, pf.fileName from Problem p join ProblemFile pf on p.problemId = pf.problemId")
-    Page<ProblemResponse> getProblems(Pageable pageable);
+    @Query("select p.problemId, p.title, p.content, p.problemType, p.score, pf.fileName from Problem p join ProblemFile pf on p.problemId = pf.problemId where p.problemType = ?2")
+    Page<ProblemResponse> getProblems(Pageable pageable, ProblemType problemType);
 
     void deleteByProblemId(Long problemId);
 

@@ -55,7 +55,7 @@ jobs:
         run: sudo docker build --tag infowargame .
 
       - name: Upload to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: seogunhee4/backend_infowargame_v3
           username: ${{ secrets.DOCKER_USERNAME }}
